@@ -27,7 +27,7 @@ const Dashboard = () => {
 
   //  Fetch logged-in user and dashboard stats
   useEffect(() => {
-  const fetchData = async () => {
+  const loadDashboard = async () => {
     const token = localStorage.getItem("token");
     if (!token) {
       navigate("/auth");
@@ -36,35 +36,24 @@ const Dashboard = () => {
 
     try {
       // Fetch logged-in user as-is (don't filter by role)
-      const userRes = await api.get("/users/me");
+      const userRes = await api.get("/auth/me");
       setUser(userRes.data);
 
-      // Fetch all data in parallel
-      const [usersRes, eventsRes, jobsRes, donationsRes] = await Promise.all([
-        api.get("/admin/users"),  // all users, no filter
-        api.get("/events"),
-        api.get("/jobs"),
-        api.get("/donations"),
-      ]);
+    const statsRes = await api.get("/stats/dashboard");
+        setStats(statsRes.data);
+      } catch (error: any) {
+        console.error("Dashboard load error:", error);
 
-      // Only count alumni for the alumni stat card
-      const alumniUsers = usersRes.data.filter(user => user.role === "alumni");
+        if (error.response?.status === 401) {
+          localStorage.removeItem("token");
+          navigate("/auth");
+        } else {
+          toast.error("Failed to load dashboard data");
+        }
+      }
+    };
 
-      setStats({
-        totalAlumni: alumniUsers.length || 0,  // alumni count only here
-        upcomingEvents: eventsRes.data.length || 0,
-        activeJobs: jobsRes.data.length || 0,
-        donations: donationsRes.data.length || 0,
-      });
-    } catch (error) {
-      console.error("Dashboard load error:", error);
-      toast.error("Session expired, please login again");
-      localStorage.removeItem("token");
-      navigate("/auth");
-    }
-  };
-
-  fetchData();
+  loadDashboard();
 }, [navigate]);
 
   const quickLinks = [

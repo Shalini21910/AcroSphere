@@ -35,7 +35,7 @@ interface Event {
   _id: string;
   title: string;
   description: string;
-  event_date: string; // ISO string
+  event_date: string; 
   location: string;
   max_participants?: number;
   image_url?: string;
@@ -417,77 +417,95 @@ const Events = () => {
               });
 
               return (
-                <Dialog key={event._id}>
-                <Card key={event._id} className="glass-card overflow-hidden">
-                  {event.image_url && (
-                    <img
-                      src={event.image_url}
-                      alt={event.title}
-                      className="w-full h-48 object-cover"
-                    />
-                  )}
-                  <CardHeader>
-                    <div className="flex justify-between items-start gap-2">
-                      <div>
-                        <CardTitle>{event.title}</CardTitle>
-                        <CardDescription className="flex items-center gap-2">
-                          <Calendar className="w-4 h-4" />
-                          {dateStr} at {timeStr}
-                        </CardDescription>
-                      </div>
-                      {isAdmin && (
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          onClick={() => handleDelete(event._id)}
-                        >
-                          <Trash2 className="w-4 h-4 text-red-500" />
-                        </Button>
-                      )}
-                    </div>
-                  </CardHeader>
+               <Card key={event._id} className="glass-card overflow-hidden">
+  {/* IMAGE MODAL */}
+  {event.image_url && (
+    <Dialog>
+      <DialogTrigger asChild>
+        <img
+          src={event.image_url}
+          alt={event.title}
+          className="w-full h-48 object-cover cursor-pointer"
+        />
+      </DialogTrigger>
 
-                  <CardContent className="space-y-3">        
-                    <div className="flex flex-col gap-2 text-sm text-muted-foreground">
-                      <span className="flex items-center gap-1">
-                        <MapPin className="w-3 h-3" />
-                        {event.location}
-                      </span>
-                      {event.max_participants && (
-                        <span className="flex items-center gap-1">
-                          <Users className="w-3 h-3" />
-                          Max {event.max_participants} participants
-                        </span>
-                      )}
-                      {event.application_link && (
-                        <a
-                          href={event.application_link}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-primary hover:underline text-sm mt-2"
-                        >
-                          Apply / Register
-                        </a>
-                      )}
-                    </div>
-                    {/* View Button */}
-          <DialogTrigger asChild>
-            <Button variant="outline" className="mt-2 w-full">
-              View Description
-            </Button>
-          </DialogTrigger>
-                  </CardContent>
-                </Card>
+      <DialogContent className="glass-card max-w-4xl max-h-[90vh] overflow-y-auto">
+        <img
+          src={event.image_url}
+          alt={event.title}
+          className="w-full h-auto object-contain rounded"
+        />
+      </DialogContent>
+    </Dialog>
+  )}
 
-                <DialogContent className="glass-card max-w-lg">
+  <CardHeader>
+    <div className="flex justify-between items-start gap-2">
+      <div>
+        <CardTitle>{event.title}</CardTitle>
+        <CardDescription className="flex items-center gap-2">
+          <Calendar className="w-4 h-4" />
+          {dateStr} at {timeStr}
+        </CardDescription>
+      </div>
+
+      {isAdmin && (
+        <Button
+          size="icon"
+          variant="ghost"
+          onClick={() => handleDelete(event._id)}
+        >
+          <Trash2 className="w-4 h-4 text-red-500" />
+        </Button>
+      )}
+    </div>
+  </CardHeader>
+
+  <CardContent className="space-y-3">
+    <div className="flex flex-col gap-2 text-sm text-muted-foreground">
+      <span className="flex items-center gap-1">
+        <MapPin className="w-3 h-3" />
+        {event.location}
+      </span>
+
+      {event.max_participants && (
+        <span className="flex items-center gap-1">
+          <Users className="w-3 h-3" />
+          Max {event.max_participants} participants
+        </span>
+      )}
+
+      {event.application_link && (
+        <a
+          href={event.application_link}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-primary hover:underline mt-2"
+        >
+          Apply / Register
+        </a>
+      )}
+    </div>
+
+    {/* DESCRIPTION MODAL */}
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button variant="outline" className="w-full">
+          View Description
+        </Button>
+      </DialogTrigger>
+
+      <DialogContent className="glass-card max-w-lg max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{event.title}</DialogTitle>
           <DialogDescription className="whitespace-pre-line">
             {event.description}
-            </DialogDescription>
+          </DialogDescription>
         </DialogHeader>
       </DialogContent>
     </Dialog>
+  </CardContent>
+</Card>
               );
             })}
           </div>

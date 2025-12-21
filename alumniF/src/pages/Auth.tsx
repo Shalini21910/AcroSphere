@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { Loader2, Mail } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { api } from "@/lib/api"; // this is your axios instance
+import { api } from "@/lib/api"; 
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -55,15 +55,14 @@ const Auth = () => {
 
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("user", JSON.stringify(res.data.user));
-      if(role==="alumni"){
-        toast.success(
-          "Account created! Your alumni account is pending admin verification."
-        );
-        navigate("/");//redirect to landing page
-      }else{
-      toast.success("Account created successfully!");
-      navigate("/dashboard");
-      }
+     toast.success(
+  role === "alumni"
+    ? "Account created! Alumni verification pending."
+    : "Account created successfully!"
+);
+
+//  everyone goes to dashboard
+navigate("/dashboard");
     } catch (error: any) {
       console.error("Signup error:", error);
       toast.error(error.response?.data?.message || "Signup failed");
@@ -72,7 +71,7 @@ const Auth = () => {
     }
   };
 
-  // ✅ Login user
+  // Login user
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -88,11 +87,13 @@ const Auth = () => {
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("user", JSON.stringify(res.data.user));
       
+     
 
       toast.success("Signed in successfully!");
     const user = res.data.user;
-console.log(user.role);
+
 if (res.data.user.role === "admin") {
+  console.log("Navigating to /admin now");
   navigate("/admin");
 } else {
   navigate("/dashboard");

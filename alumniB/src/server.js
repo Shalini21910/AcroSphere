@@ -16,14 +16,24 @@ import jobRoutes from "./routes/job.routes.js";
 import donationRoutes from "./routes/donation.routes.js";
 import userRoutes from "./routes/user.routes.js";
 import alumniRoutes from "./routes/alumni.routes.js";
+import statsRoutes from "./routes/stats.routes.js";
 
 const app=express();
 
 //  Allow requests from your frontend
-app.use(cors({
-  origin: "http://localhost:8080",  
+/*app.use(cors({
+  origin: "http://localhost:8080", 
+    
+   
   credentials: true                 
-}));
+}));*/
+
+app.use(
+  cors({
+    origin: true, // reflect request origin
+    credentials: true,
+  })
+);
 
 app.use(express.json());
 
@@ -46,7 +56,7 @@ app.use("/api/jobs", jobRoutes);
 app.use("/api/donations", donationRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/alumni", alumniRoutes);
-
+app.use("/api/stats",statsRoutes);
 
 //const PORT = process.env.PORT || 5000;
 //mongodb connection

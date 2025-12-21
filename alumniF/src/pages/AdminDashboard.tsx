@@ -64,7 +64,8 @@ const AdminDashboard = () => {
   const verifyAdmin = async () => {
     try {
       const { data } = await api.get("/auth/me");
-      if (data.user.role !== "admin") {
+
+      if (data.role !== "admin") {
         toast({
           title: "Access denied",
           description: "Admins only",
@@ -74,7 +75,7 @@ const AdminDashboard = () => {
         return;
       }
 
-      setUser(data.user);
+      setUser(data);
       await loadDashboardData();
     } catch {
       navigate("/auth");
@@ -118,12 +119,12 @@ const AdminDashboard = () => {
 
   
 
-  const deleteJob = async (id: string) => {
+  /*const deleteJob = async (id: string) => {
     if (!confirm("Delete this job permanently?")) return;
-    await api.delete(`/admin/jobs/reject/${id}`);
+    await api.delete(`/admin/jobs/${id}`);
     toast({ title: "Job deleted" });
     loadDashboardData();
-  };
+  };*/
 
   const approveAlumni = async (id: string) => {
     await api.put(`/admin/alumni/approve/${id}`);
@@ -144,7 +145,7 @@ const AdminDashboard = () => {
   };
 
   const rejectJob = async (id: string) => {
-    await api.delete(`/admin/jobs/reject/${id}`);
+    await api.delete(`/admin/jobs/${id}`);
     toast({ title: "Job rejected" });
     loadDashboardData();
   };
@@ -280,9 +281,7 @@ const AdminDashboard = () => {
                         </Button>
                       </>
                     )}
-                    <Button size="sm" variant="destructive" onClick={() => deleteJob(j._id)}>
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
+                    
                   </TableCell>
                 </TableRow>
               ))}

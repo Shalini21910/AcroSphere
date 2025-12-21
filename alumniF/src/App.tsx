@@ -39,7 +39,10 @@ const AdminProtected = ({ children }: { children: JSX.Element }) => {
 
 const App = () => {
   useEffect(() => {
-  fetch("http://localhost:5000/api/health")
+  
+   // const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+    
+  fetch(`${import.meta.env.VITE_API_BASE_URL}/health`)
     .then(res => res.json())
     .then(data => console.log(" Backend says:", data))
     .catch(err => console.error(" Connection failed:", err));

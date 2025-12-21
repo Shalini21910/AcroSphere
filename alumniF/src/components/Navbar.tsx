@@ -4,14 +4,14 @@ import { GraduationCap, LogOut, User } from "lucide-react";
 import { toast } from "sonner";
 
 interface NavbarProps {
-  user: any; // You can refine this type later
+  user: any; 
 }
 
 const Navbar = ({ user }: NavbarProps) => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    // Remove JWT from localStorage
+   
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     toast.success("Logged out successfully");

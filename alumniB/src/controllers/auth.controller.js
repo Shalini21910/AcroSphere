@@ -2,8 +2,8 @@ import User from "../models/user.js";
 import jwt from "jsonwebtoken";
 
 // Generate JWT
-const generateToken = (userId) => {
-  return jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: "7d" });
+const generateToken = (id) => {
+  return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "7d" });
 };
 
 // Register new user
@@ -57,44 +57,28 @@ export const registerUser = async (req, res) => {
 
 // Login user
 export const loginUser = async (req, res) => {
-  try {
-    const { email, password } = req.body;
+  const { email, password } = req.body;
 
-    // Check if both fields exist
-    if (!email || !password) {
-      return res.status(400).json({ message: "Email and password are required" });
-    }
+  const user = await User.findOne({ email });
+  if (!user) {
+    return res.status(400).json({ message: "Invalid email" });
+  }
 
-    // Find user by email
-    const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(400).json({ message: "Invalid email" });
-    }
+  const isMatch = await user.matchPassword(password);
+  if (!isMatch) {
+    return res.status(400).json({ message: "Invalid password" });
+  }
 
-    // Compare password
-    const isMatch = await user.matchPassword(password);
-    if (!isMatch) {
-      return res.status(400).json({ message: "Invalid password" });
-    }
-if (user.pendingAlumni) {
-  return res.status(403).json({
-    message: "Your alumni account is pending admin verification",
+  // Pending alumni allowed (treated as student)
+  return res.status(200).json({
+    message: "Login successful",
+    token: generateToken(user._id),
+    user: {
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,             // student or alumni
+      pendingAlumni: user.pendingAlumni,
+    },
   });
 } 
-    // Send success response
-    return res.status(200).json({
-      message: "Login successful",
-      token: generateToken(user._id),
-      user: {
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        pendingAlumni: user.pendingAlumni,
-      },
-    });
-  } catch (error) {
-    console.error("Login error:", error);
-    return res.status(500).json({ message: "Server error" });
-  }
-};

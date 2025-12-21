@@ -1,11 +1,10 @@
-// routes/user.route.js
 import express from "express";
 import { protect } from "../middlewares/auth.middleware.js";
 import User from "../models/user.js";
 
 const router = express.Router();
 
-// ✅ Get currently logged-in user
+// Get currently logged-in user
 router.get("/me", protect, async (req, res) => {
   try {
     // req.user is set by protect middleware

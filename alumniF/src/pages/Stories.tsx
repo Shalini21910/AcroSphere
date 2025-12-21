@@ -24,13 +24,11 @@ import { Award, Plus, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { api } from "@/lib/api";
 
-// ===== Types matching your backend =====
-
 type User = {
   _id: string;
   full_name: string;
   email: string;
-  role: string; // e.g. "admin" | "user"
+  role: string; 
 };
 
 type StoryAuthor = {
@@ -138,9 +136,7 @@ const Stories = () => {
       const imageUrl = res.data.secure_url || res.data.imageUrl; 
     if (!imageUrl) throw new Error("No URL returned from upload");
 
-      //const data = await res.json();
       setFormData((prev) => ({ ...prev, image_url: res.data.imageUrl }));
-      //console.log("Uploaded image URL:", res.data.imageUrl);
 
       toast({ title: "Uploaded", description: "Image uploaded successfully" });
     } catch (error) {
@@ -202,7 +198,6 @@ const Stories = () => {
     }
   };
 
-  // Optional: delete story for admins (backend route already exists)
   const handleDelete = async (id: string) => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -347,81 +342,95 @@ const Stories = () => {
         ) : (
           <div className="grid md:grid-cols-2 gap-6">
            {stories.map((story) => (
-  <Dialog key={story._id}>
-    <Card className="glass-card overflow-hidden">
-      {story.image_url && (
-        <img
-          src={story.image_url}
-          alt={story.title}
-          className="w-full h-64 object-cover"
-        />
-      )}
+  <Card key={story._id} className="glass-card overflow-hidden">
+    {/* IMAGE MODAL */}
+    {story.image_url && (
+      <Dialog>
+        <DialogTrigger asChild>
+          <img
+            src={story.image_url}
+            alt={story.title}
+            className="w-full h-64 object-cover cursor-pointer"
+          />
+        </DialogTrigger>
 
-      <CardHeader>
-        <div className="flex justify-between items-start gap-2">
-          <div>
-            <CardTitle className="flex items-center gap-2">
-              <Award className="w-5 h-5 text-primary" />
-              {story.title}
-            </CardTitle>
+        <DialogContent className="glass-card max-w-4xl max-h-[90vh] overflow-y-auto">
+          <img
+            src={story.image_url}
+            alt={story.title}
+            className="w-full h-auto object-contain rounded"
+          />
+        </DialogContent>
+      </Dialog>
+    )}
 
-            {story.achievement && (
-              <CardDescription className="font-semibold text-primary">
-                {story.achievement}
-              </CardDescription>
-            )}
+    <CardHeader>
+      <div className="flex justify-between items-start gap-2">
+        <div>
+          <CardTitle className="flex items-center gap-2">
+            <Award className="w-5 h-5 text-primary" />
+            {story.title}
+          </CardTitle>
 
-            {story.author && (
-              <p className="mt-1 text-xs text-muted-foreground">
-                By {story.author.full_name} ({story.author.email})
-              </p>
-            )}
-          </div>
+          {story.achievement && (
+            <CardDescription className="font-semibold text-primary">
+              {story.achievement}
+            </CardDescription>
+          )}
 
-          {user?.role === "admin" && (
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => handleDelete(story._id)}
-            >
-              <Trash2 className="w-4 h-4 text-red-500" />
-            </Button>
+          {story.author && (
+            <p className="mt-1 text-xs text-muted-foreground">
+              By {story.author.full_name} ({story.author.email})
+            </p>
           )}
         </div>
-      </CardHeader>
 
-      <CardContent className="space-y-3">
-        {/* Preview (do NOT preserve whitespace here) */}
-        <p className="text-sm line-clamp-2">
-          {story.story}
-        </p>
+        {user?.role === "admin" && (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => handleDelete(story._id)}
+          >
+            <Trash2 className="w-4 h-4 text-red-500" />
+          </Button>
+        )}
+      </div>
+    </CardHeader>
 
-        {/* Read more */}
+    <CardContent className="space-y-3">
+      {/* STORY PREVIEW */}
+      <p className="text-sm line-clamp-2">
+        {story.story}
+      </p>
+
+      {/* STORY MODAL */}
+      <Dialog>
         <DialogTrigger asChild>
           <Button variant="link" size="sm" className="p-0 w-fit">
             Read More
           </Button>
         </DialogTrigger>
-      </CardContent>
-    </Card>
 
-    {/* Full story modal */}
-    <DialogContent className="glass-card max-w-2xl max-h-[80vh] overflow-y-auto">
-      <DialogHeader>
-        <DialogTitle>{story.title}</DialogTitle>
-        {story.achievement && (
-          <DialogDescription className="font-semibold text-primary">
-            {story.achievement}
-          </DialogDescription>
-        )}
-      </DialogHeader>
+        <DialogContent className="glass-card max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>{story.title}</DialogTitle>
+            {story.achievement && (
+              <DialogDescription className="font-semibold text-primary">
+                {story.achievement}
+              </DialogDescription>
+            )}
+          </DialogHeader>
 
-      <div className="mt-4 whitespace-pre-line text-sm">
-        {story.story}
-      </div>
-    </DialogContent>
-  </Dialog>
+          <div className="mt-4 whitespace-pre-line text-sm">
+            {story.story}
+          </div>
+        </DialogContent>
+      </Dialog>
+    </CardContent>
+  </Card>
 ))}
+
+
 
           </div>
         )}

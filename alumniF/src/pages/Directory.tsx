@@ -46,7 +46,6 @@ const Directory = () => {
     const fetchProfiles = async () => {
       try {
         const res = await api.get("/alumni");
-        console.log("ALUMNI DATA", res.data);
 
         const data: Profile[] = res.data;
         setProfiles(data);

@@ -11,8 +11,6 @@ import { DollarSign, Plus, Target, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { api } from "@/lib/api";
 
-//const API_URL = "http://localhost:5000/api/donations";
-
 const Donations = () => {
   const { toast } = useToast();
   const [user, setUser] = useState<any>(null);
@@ -77,16 +75,12 @@ const Donations = () => {
           "Content-Type": "multipart/form-data",
         },
       });
-
-      console.log("Backend upload response:", res.data);
       
       const imageUrl = res.data.secure_url || res.data.imageUrl; 
     if (!imageUrl) throw new Error("No URL returned from upload");
 
-      //const data = await res.json();
       setFormData((prev) => ({ ...prev, [field]: imageUrl }));
-      //console.log("Uploaded image URL:", res.data.imageUrl);
-
+      
       toast({ title: "Uploaded", description: "Image uploaded successfully" });
     } catch (error) {
       console.error(error);
@@ -214,68 +208,95 @@ const Donations = () => {
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {donations.map((donation) => (
-  <Dialog key={donation._id}>
-    <Card className="glass-card overflow-hidden">
-      {donation.image_url && (
-        <img
-          src={donation.image_url}
-          alt={donation.title}
-          className="w-full h-48 object-cover"
-        />
-      )}
+  <Card key={donation._id} className="glass-card overflow-hidden">
+    {/* IMAGE MODAL */}
+    {donation.image_url && (
+      <Dialog>
+        <DialogTrigger asChild>
+          <img
+            src={donation.image_url}
+            alt={donation.title}
+            className="w-full h-48 object-cover cursor-pointer"
+          />
+        </DialogTrigger>
 
-      <CardHeader>
-        <div className="flex justify-between items-center">
-          <CardTitle>{donation.title}</CardTitle>
-          {isAdmin && (
-            <Button
-              size="icon"
-              variant="ghost"
-              onClick={() => handleDelete(donation._id)}
-            >
-              <Trash2 className="w-4 h-4 text-red-500" />
-            </Button>
-          )}
-        </div>
+        <DialogContent className="glass-card max-w-4xl max-h-[90vh] overflow-y-auto">
+          <img
+            src={donation.image_url}
+            alt={donation.title}
+            className="w-full h-auto object-contain rounded"
+          />
+        </DialogContent>
+      </Dialog>
+    )}
 
-        {/* Description preview */}
-        <CardDescription className="line-clamp-2">
-          {donation.description}
-        </CardDescription>
+    <CardHeader>
+      <div className="flex justify-between items-center">
+        <CardTitle>{donation.title}</CardTitle>
 
-        {/* Read more */}
+        {isAdmin && (
+          <Button
+            size="icon"
+            variant="ghost"
+            onClick={() => handleDelete(donation._id)}
+          >
+            <Trash2 className="w-4 h-4 text-red-500" />
+          </Button>
+        )}
+      </div>
+
+      {/* DESCRIPTION PREVIEW */}
+      <CardDescription className="line-clamp-2">
+        {donation.description}
+      </CardDescription>
+
+      {/* DESCRIPTION MODAL */}
+      <Dialog>
         <DialogTrigger asChild>
           <Button variant="link" size="sm" className="p-0 w-fit">
             Read More
           </Button>
         </DialogTrigger>
-      </CardHeader>
 
-      <CardContent className="space-y-4">
-        {donation.qr_code_url && (
-          <div className="text-center">
-            <p className="text-sm font-semibold mb-2">Scan to Donate</p>
-            <img
-              src={donation.qr_code_url}
-              alt="QR Code"
-              className="mx-auto h-32 w-32"
-            />
-          </div>
-        )}
-      </CardContent>
-    </Card>
+        <DialogContent className="glass-card max-w-lg max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>{donation.title}</DialogTitle>
+            <DialogDescription className="whitespace-pre-line">
+              {donation.description}
+            </DialogDescription>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
+    </CardHeader>
 
-    {/* Full description modal */}
-    <DialogContent className="glass-card max-w-lg">
-      <DialogHeader>
-        <DialogTitle>{donation.title}</DialogTitle>
-        <DialogDescription className="whitespace-pre-line">
-          {donation.description}
-        </DialogDescription>
-      </DialogHeader>
-    </DialogContent>
-  </Dialog>
+    <CardContent className="space-y-4">
+      {donation.qr_code_url && (
+        <div className="text-center">
+          <p className="text-sm font-semibold mb-2">Scan to Donate</p>
+          <Dialog>
+            <DialogTrigger asChild>
+              <img
+                src={donation.qr_code_url}
+                alt="QR Code"
+                className="mx-auto h-32 w-32 cursor-pointer"
+              />
+            </DialogTrigger>
+
+            <DialogContent className="glass-card max-w-sm">
+              <img
+                src={donation.qr_code_url}
+                alt="QR Code"
+                className="w-full h-auto object-contain"
+              />
+            </DialogContent>
+          </Dialog>
+        </div>
+      )}
+    </CardContent>
+  </Card>
 ))}
+
+
 
           </div>
         )}

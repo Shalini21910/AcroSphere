@@ -6,6 +6,8 @@ import Job from "../models/job.js";
 //Get all users
 export const getAllUsers = async (req, res) => {
   try {
+    console.log("getAllUsers called by:", req.user.role);
+
     const users = await User.find().select("-password");
     res.json(users);
   } catch (error) {
@@ -170,4 +172,17 @@ export const rejectJob = async (req, res) => {
     console.error("Error rejecting job:", error);
     res.status(500).json({ message: "Server error" });
   }
+};
+
+export const deleteJob = async (req, res) => {
+  const job = await Job.findOneAndDelete({
+    _id: req.params.id,
+    is_verified: true
+  });
+
+  if (!job) {
+    return res.status(404).json({ message: "Verified job not found" });
+  }
+
+  res.json({ message: "Job deleted successfully" });
 };

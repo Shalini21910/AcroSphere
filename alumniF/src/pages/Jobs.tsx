@@ -68,7 +68,7 @@ const Jobs = () => {
       return;
     }
 
-    // Role check for safety
+    // Role check 
     if (!(user?.role === "admin" || user?.role === "alumni")) {
       toast({
         title: "Unauthorized",
@@ -117,7 +117,7 @@ const Jobs = () => {
     if (!window.confirm("Are you sure you want to delete this job?")) return;
 
     try {
-      await api.delete(`/jobs/${id}`, {
+      await api.delete(`admin/jobs/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
